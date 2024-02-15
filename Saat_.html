@@ -1,0 +1,43 @@
+<pre>
+<font color="#5e6d03">#include</font> <font color="#434f54">&lt;</font><b><font color="#d35400">SoftwareSerial</font></b><font color="#434f54">.</font><font color="#000000">h</font><font color="#434f54">&gt;</font>
+<font color="#5e6d03">#include</font> <font color="#005c5f">&#34;NTPClient.h&#34;</font>
+<font color="#5e6d03">#include</font> <font color="#005c5f">&#34;ESP8266WiFi.h&#34;</font>
+<font color="#5e6d03">#include</font> <font color="#005c5f">&#34;WiFiUdp.h&#34;</font>
+
+<font color="#00979c">const</font> <font color="#00979c">char</font> <font color="#434f54">*</font><font color="#000000">ssid</font> <font color="#434f54">=</font> <font color="#005c5f">&#34;Redmi12C&#34;</font><font color="#000000">;</font>
+<font color="#00979c">const</font> <font color="#00979c">char</font> <font color="#434f54">*</font><font color="#000000">password</font> <font color="#434f54">=</font> <font color="#005c5f">&#34;3spqhr4mbs2kaae&#34;</font><font color="#000000">;</font>
+
+<b><font color="#d35400">SoftwareSerial</font></b> <font color="#000000">Ser</font><font color="#000000">(</font><font color="#000000">D5</font><font color="#434f54">,</font><font color="#000000">D6</font><font color="#000000">)</font><font color="#000000">;</font>
+
+<font color="#d35400">WiFiUDP</font> <font color="#000000">ntpUDP</font><font color="#000000">;</font>
+<font color="#000000">NTPClient</font> <font color="#000000">timeClient</font><font color="#000000">(</font><font color="#000000">ntpUDP</font><font color="#434f54">,</font> <font color="#005c5f">&#34;europe.pool.ntp.org&#34;</font><font color="#434f54">,</font> <font color="#000000">3600</font><font color="#434f54">,</font> <font color="#000000">60000</font><font color="#000000">)</font><font color="#000000">;</font>
+
+<font color="#00979c">void</font> <font color="#5e6d03">setup</font><font color="#000000">(</font><font color="#000000">)</font> <font color="#000000">{</font>
+ &nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">begin</font><font color="#000000">(</font><font color="#000000">115200</font><font color="#000000">)</font><font color="#000000">;</font>
+
+ &nbsp;<b><font color="#d35400">WiFi</font></b><font color="#434f54">.</font><font color="#d35400">begin</font><font color="#000000">(</font><font color="#000000">ssid</font><font color="#434f54">,</font> <font color="#000000">password</font><font color="#000000">)</font><font color="#000000">;</font>
+
+ &nbsp;<font color="#5e6d03">while</font> <font color="#000000">(</font> <b><font color="#d35400">WiFi</font></b><font color="#434f54">.</font><font color="#d35400">status</font><font color="#000000">(</font><font color="#000000">)</font> <font color="#434f54">!=</font> <font color="#000000">WL_CONNECTED</font> <font color="#000000">)</font> <font color="#000000">{</font>
+ &nbsp;&nbsp;&nbsp;<font color="#d35400">delay</font> <font color="#000000">(</font> <font color="#000000">500</font> <font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">print</font> <font color="#000000">(</font> <font color="#005c5f">&#34;.&#34;</font> <font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;<font color="#000000">}</font>
+ &nbsp;<font color="#000000">Ser</font><font color="#434f54">.</font><font color="#d35400">begin</font><font color="#000000">(</font><font color="#000000">9600</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;<font color="#000000">timeClient</font><font color="#434f54">.</font><font color="#d35400">begin</font><font color="#000000">(</font><font color="#000000">)</font><font color="#000000">;</font>
+<font color="#000000">}</font>
+
+<font color="#00979c">void</font> <font color="#5e6d03">loop</font><font color="#000000">(</font><font color="#000000">)</font> <font color="#000000">{</font>
+ &nbsp;<font color="#434f54">&#47;&#47;timeClient.update();</font>
+
+ &nbsp;<font color="#5e6d03">if</font> <font color="#000000">(</font><font color="#000000">Ser</font><font color="#434f54">.</font><font color="#d35400">available</font><font color="#000000">(</font><font color="#000000">)</font> <font color="#434f54">&gt;</font> <font color="#000000">0</font><font color="#000000">)</font> <font color="#000000">{</font>
+ &nbsp;&nbsp;&nbsp;<font color="#00979c">String</font> <font color="#000000">a</font> <font color="#434f54">=</font> <font color="#000000">Ser</font><font color="#434f54">.</font><font color="#d35400">readString</font><font color="#000000">(</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;<font color="#00979c">int</font> <font color="#000000">b</font> <font color="#434f54">=</font> <font color="#000000">a</font><font color="#434f54">.</font><font color="#d35400">toInt</font><font color="#000000">(</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;<font color="#5e6d03">if</font> <font color="#000000">(</font><font color="#000000">b</font> <font color="#434f54">==</font> <font color="#000000">255</font><font color="#000000">)</font> <font color="#000000">{</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000000">timeClient</font><font color="#434f54">.</font><font color="#d35400">update</font><font color="#000000">(</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000000">Ser</font><font color="#434f54">.</font><font color="#d35400">println</font><font color="#000000">(</font><font color="#000000">timeClient</font><font color="#434f54">.</font><font color="#000000">getHours</font><font color="#000000">(</font><font color="#000000">)</font> <font color="#434f54">+</font> <font color="#000000">2</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#d35400">delay</font><font color="#000000">(</font><font color="#000000">5000</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000000">Ser</font><font color="#434f54">.</font><font color="#d35400">println</font><font color="#000000">(</font><font color="#000000">timeClient</font><font color="#434f54">.</font><font color="#000000">getMinutes</font><font color="#000000">(</font><font color="#000000">)</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;<font color="#000000">}</font>
+ &nbsp;<font color="#000000">}</font>
+<font color="#000000">}</font>
+
+</pre>
